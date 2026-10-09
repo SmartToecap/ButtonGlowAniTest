@@ -1,0 +1,201 @@
+<html>
+  <head>
+    <style>
+      body {
+  min-width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+}
+
+@property --rim-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+
+.jewel-btn {
+  --radius: 24px;
+  --border: 3px;
+  --halo-size: 17px;
+
+  margin-top: 5rem;
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: #f5f2ff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The actual visual button */
+.jewel-btn__visual {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+
+  min-width: 210px;
+  padding: 18px 22px;
+  border: var(--border) solid #292633;
+  border-radius: inherit;
+
+  background: linear-gradient(145deg, #191722, #0c0b12 70%);
+
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 5%), 0 8px 24px rgb(0 0 0 / 30%);
+
+  transition: border-color 500ms ease,
+    box-shadow 500ms ease,
+    background 500ms ease,
+    transform 500ms cubic-bezier(.2, .8, .2, 1);
+}
+
+/* The blurred, dashed jewel halo */
+.jewel-btn__visual::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+
+  inset: calc(-1 * var(--halo-size));
+  border-radius: calc(var(--radius) + var(--halo-size) - var(--border));
+  border-width: 20px;
+
+  /* Repeating bands create the dashed pattern */
+  background: repeating-linear-gradient(
+    90deg,
+    #80eaff 0 4px,
+    transparent 4px 10px,
+    #b58aff 10px 13px,
+    transparent 13px 20px,
+    #fff0bd 20px 22px,
+    transparent 22px 30px
+  );
+
+  /* Hollow center: preserve the button silhouette */
+  -webkit-mask: linear-gradient(#000 0 0) content-box,
+                linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 14px;
+
+  filter: blur(12px);
+  opacity: 0;
+  transform: scale(1) rotate(0deg);
+  pointer-events: none;
+
+  transition: opacity 500ms ease,
+    transform 900ms cubic-bezier(.2, .8, .2, 1),
+    filter 500ms ease;
+}
+
+/* Text */
+.jewel-btn__label {
+  font: 600 14px/1.2 system-ui, sans-serif;
+  letter-spacing: .06em;
+}
+
+.jewel-btn__icon {
+  font-size: 19px;
+  color: #858093;
+  transition: color 400ms ease, transform 500ms ease;
+}
+
+/* Interaction */
+.jewel-btn:hover .jewel-btn__visual,
+.jewel-btn:focus-visible .jewel-btn__visual {
+  border-color: transparent;
+
+  /* Bright, rotating gradient border */
+  background:
+    linear-gradient(145deg, #171521, #0b0a10) padding-box,
+    conic-gradient(
+      from var(--rim-angle, 0deg),
+      #332b51,
+      #5fe7ff,
+      #7252d8,
+      #fff0bd,
+      #a45cff,
+      #332b51
+    ) border-box;
+
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 12%),
+    0 0 24px rgb(111 77 255 / 15%),
+    0 12px 35px rgb(0 0 0 / 35%);
+
+  transform: translateY(-2px);
+  animation: rim-shift 5s linear infinite;
+}
+
+.jewel-btn:hover .jewel-btn__visual::before,
+.jewel-btn:focus-visible .jewel-btn__visual::before {
+  opacity: .4;
+  filter: blur(12px);
+  transform: scale(1) rotate(0deg);
+  animation: dash-flow 15s linear infinite;
+}
+
+.jewel-btn:hover .jewel-btn__icon,
+.jewel-btn:focus-visible .jewel-btn__icon {
+  color: #fff0bd;
+  transform: translate(3px, -3px);
+}
+
+/* Dash movement and halo shimmer */
+@keyframes dash-flow {
+  from {
+    background-position: 0 0;
+    transform: scale(1) rotate(0deg);
+  }
+
+  to {
+    background-position: 120px 0;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Animate the actual rim independently */
+@keyframes rim-shift {
+  0% {
+    --rim-angle: 0deg;
+  }
+  100% {
+    --rim-angle: 360deg;
+  }
+}
+
+/* Keyboard focus */
+.jewel-btn:focus-visible {
+  outline: 2px solid #a9a0ff;
+  outline-offset: 6px;
+}
+
+/* Don't force motion on users who disable it */
+@media (prefers-reduced-motion: reduce) {
+  .jewel-btn *,
+  .jewel-btn *::before,
+  .jewel-btn *::after {
+    animation: none !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+<button class="jewel-btn" type="button">
+  <div class="jewel-btn__visual">
+    <span class="jewel-btn__label">Discover</span>
+    <span class="jewel-btn__icon" aria-hidden="true">&nearr;</span>
+  </div>
+</button>
+</body>
+</html>
